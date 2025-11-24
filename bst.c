@@ -89,3 +89,128 @@ Node* insertNode_Title(Node *root, Codice *codice) {
     // Se for duplicado, apenas retorna a raiz
     return root;
 }
+
+// =================================================================
+// 3. FUNÇÕES DE BUSCA
+// =================================================================
+
+// Busca por ID. O ponteiro 'comparisons' conta quantos nós foram visitados.
+Node* searchNode_ID(Node *root, int id, int *comparisons) {
+    if (root == NULL) {
+        return NULL;
+    }
+
+    (*comparisons)++; // Conta a visita
+    if (id == root->data->id_registro) {
+        return root;
+    } else if (id < root->data->id_registro) {
+        return searchNode_ID(root->left, id, comparisons);
+    } else {
+        return searchNode_ID(root->right, id, comparisons);
+    }
+}
+
+// Busca por Título. O ponteiro 'comparisons' conta quantos nós foram visitados.
+Node* searchNode_Title(Node *root, const char *title, int *comparisons) {
+    if (root == NULL) {
+        return NULL;
+    }
+
+    int cmp = strcmp(title, root->data->titulo);
+    (*comparisons)++; // Conta a visita
+
+    if (cmp == 0) {
+        return root;
+    } else if (cmp < 0) {
+        return searchNode_Title(root->left, title, comparisons);
+    } else {
+        return searchNode_Title(root->right, title, comparisons);
+    }
+}
+
+// =================================================================
+// 4. FUNÇÕES DE REMOÇÃO
+// =================================================================
+
+// Acha o nó com o menor valor na subárvore (o sucessor in-order)
+Node* findMin(Node *node) {
+    Node *current = node;
+    while (current && current->left != NULL) {
+        current = current->left;
+    }
+    return current;
+}
+
+// Remove um nó da BST de ID.
+Node* deleteNode_ID(Node *root, int id) {
+    if (root == NULL) return root;
+
+    // 1. Encontra o nó
+    if (id < root->data->id_registro) {
+        root->left = deleteNode_ID(root->left, id);
+    } else if (id > root->data->id_registro) {
+        root->right = deleteNode_ID(root->right, id);
+    } else {
+        // 2. Nó encontrado - Trata os 3 casos
+
+        // Caso 1 e 2: Zero ou um filho
+        if (root->left == NULL) {
+            Node *temp = root->right;
+            // Não liberamos root->data aqui, pois ele é compartilhado!
+            free(root);
+            return temp;
+        } else if (root->right == NULL) {
+            Node *temp = root->left;
+            // Não liberamos root->data aqui, pois ele é compartilhado!
+            free(root);
+            return temp;
+        }
+
+        // Caso 3: Dois filhos
+        Node *temp = findMin(root->right);
+
+        // Copia o ponteiro de dados do sucessor para o nó atual
+        root->data = temp->data;
+
+        // Remove o sucessor in-order da subárvore direita
+        root->right = deleteNode_ID(root->right, temp->data->id_registro);
+    }
+    return root;
+}
+
+// Remove um nó da BST de Título.
+Node* deleteNode_Title(Node *root, const char *title) {
+    if (root == NULL) return root;
+
+    int cmp = strcmp(title, root->data->titulo);
+
+    // 1. Encontra o nó
+    if (cmp < 0) {
+        root->left = deleteNode_Title(root->left, title);
+    } else if (cmp > 0) {
+        root->right = deleteNode_Title(root->right, title);
+    } else {
+        // 2. Nó encontrado - Trata os 3 casos
+
+        // Caso 1 e 2: Zero ou um filho
+        if (root->left == NULL) {
+            Node *temp = root->right;
+            free(root);
+            return temp;
+        } else if (root->right == NULL) {
+            Node *temp = root->left;
+            free(root);
+            return temp;
+        }
+
+        // Caso 3: Dois filhos
+        Node *temp = findMin(root->right);
+
+        // Copia o ponteiro de dados do sucessor para o nó atual
+        root->data = temp->data;
+
+        // Remove o sucessor in-order da subárvore direita
+        root->right = deleteNode_Title(root->right, temp->data->titulo);
+    }
+    return root;
+}
