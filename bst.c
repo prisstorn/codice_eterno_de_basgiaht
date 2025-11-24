@@ -53,3 +53,39 @@ void destroyTree(Node *root, int free_codice_data) {
         free(root);
     }
 }
+
+// =================================================================
+// 2. FUNÇÕES DE INSERÇÃO
+// =================================================================
+
+// Insere um nó na BST de ID (comparação numérica)
+Node* insertNode_ID(Node *root, Codice *codice) {
+    if (root == NULL) {
+        return createNode(codice);
+    }
+
+    if (codice->id_registro < root->data->id_registro) {
+        root->left = insertNode_ID(root->left, codice);
+    } else if (codice->id_registro > root->data->id_registro) {
+        root->right = insertNode_ID(root->right, codice);
+    }
+    // Se for duplicado, apenas retorna a raiz (não insere)
+    return root;
+}
+
+// Insere um nó na BST de Título (comparação alfabética com strcmp)
+Node* insertNode_Title(Node *root, Codice *codice) {
+    if (root == NULL) {
+        return createNode(codice);
+    }
+
+    int cmp = strcmp(codice->titulo, root->data->titulo);
+
+    if (cmp < 0) {
+        root->left = insertNode_Title(root->left, codice);
+    } else if (cmp > 0) {
+        root->right = insertNode_Title(root->right, codice);
+    }
+    // Se for duplicado, apenas retorna a raiz
+    return root;
+}
