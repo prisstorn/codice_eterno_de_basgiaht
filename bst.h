@@ -31,3 +31,27 @@ Codice* createCodice(const char *titulo, const char *autor, int id);
 Node* createNode(Codice *codice);
 void destroyTree(Node *root, int free_codice_data); // free_codice_data diz se é para liberar o Codice junto
 void freeCodice(Codice *codice);
+// Funções de Inserção
+Node* insertNode_ID(Node *root, Codice *codice);
+Node* insertNode_Title(Node *root, Codice *codice);
+
+// Funções de Busca
+Node* searchNode_ID(Node *root, int id, int *comparisons);
+Node* searchNode_Title(Node *root, const char *title, int *comparisons);
+
+// Funções de Remoção
+Node* findMin(Node *node); // Acha o menor nó da subárvore
+Node* deleteNode_ID(Node *root, int id);
+Node* deleteNode_Title(Node *root, const char *title);
+
+// Travessia (para listar em ordem)
+void traverseInOrder(Node *root);
+
+// Métricas
+int calculateHeight(Node *root); // Calcula a altura da árvore
+
+// I/O (Simulação de Banco de Dados)
+CodiceEternal* loadCatalogFromFile(const char *filename);
+void saveCatalogToFile(Node *root, const char *filename);
+
+#endif // BST_H
